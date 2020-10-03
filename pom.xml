@@ -42,12 +42,20 @@
     </license>
   </licenses>
 
+  <!--
   <scm>
     <connection>scm:git:git@github.com:apache/incubator-livy.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/incubator-livy.git</developerConnection>
     <url>scm:git:git@github.com:apache/incubator-livy.git</url>
     <tag>HEAD</tag>
   </scm>
+  -->
+  <scm>
+      <connection>scm:git:git@github.com:onedigit/incubator-livy</connection>
+      <url>scm:git:git@github.com:onedigit/incubator-livy</url>
+      <developerConnection>scm:git:git@github.com:onedigit/incubator-livy</developerConnection>
+      <tag>incubator-livy-0.8.0-incubating-SNAPSHOT</tag>
+  </scm> 
 
   <issueManagement>
     <system>JIRA</system>
@@ -1163,5 +1171,19 @@
     </profile>
 
   </profiles>
+
+    <distributionManagement>
+      <repository>
+        <id>central</id>
+        <name>d1aa8c5c011e-releases</name>
+        <url>http://qpc:8081/artifactory/maven-release</url>
+      </repository>
+      <snapshotRepository>
+        <id>snapshots</id>
+        <name>d1aa8c5c011e-snapshots</name>
+        <url>http://qpc:8081/artifactory/maven-release</url>
+      </snapshotRepository>
+    </distributionManagement>
+
 
 </project>
