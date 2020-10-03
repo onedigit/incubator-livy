@@ -251,12 +251,24 @@ abstract class PythonBaseInterpreterSpec extends BaseInterpreterSpec {
   }
 }
 
-class Python2InterpreterSpec extends PythonBaseInterpreterSpec {
+class Python2InterpreterSpec extends PythonBaseInterpreterSpec with BeforeAndAfterAll {
 
   implicit val formats = DefaultFormats
 
+
+  override def beforeAll(): Unit = {
+    super.beforeAll()
+    sys.props.put("pyspark.python", "python2")
+  }
+
+  override def afterAll(): Unit = {
+    sys.props.remove("pyspark.python")
+    super.afterAll()
+  }
+
   override def createInterpreter(): Interpreter = {
-    val sparkConf = new SparkConf()
+    val sparkConf = new SparkConf().setMaster("local").setAppName("Livy")
+    sparkConf.set("spark.livy.spark_major_version", "3")
     PythonInterpreter(sparkConf, new SparkEntries(sparkConf))
   }
 
@@ -287,7 +299,7 @@ class Python3InterpreterSpec extends PythonBaseInterpreterSpec with BeforeAndAft
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    sys.props.put("pyspark.python", "python3")
+    sys.props.put("pyspark.python", "python3.7")
   }
 
   override def afterAll(): Unit = {
@@ -296,7 +308,8 @@ class Python3InterpreterSpec extends PythonBaseInterpreterSpec with BeforeAndAft
   }
 
   override def createInterpreter(): Interpreter = {
-    val sparkConf = new SparkConf()
+    val sparkConf = new SparkConf().setMaster("local").setAppName("Livy")
+    sparkConf.set("spark.livy.spark_major_version", "3")
     PythonInterpreter(sparkConf, new SparkEntries(sparkConf))
   }
 
