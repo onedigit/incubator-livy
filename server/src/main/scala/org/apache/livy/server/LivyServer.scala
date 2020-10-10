@@ -21,20 +21,20 @@ import java.io.{BufferedInputStream, InputStream}
 import java.net.InetAddress
 import java.util.concurrent._
 import java.util.EnumSet
+
 import javax.servlet._
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import org.apache.hadoop.security.{SecurityUtil, UserGroupInformation}
 import org.apache.hadoop.security.authentication.server._
+import org.apache.hadoop.security.http.CrossOriginFilter
 import org.eclipse.jetty.servlet.FilterHolder
 import org.scalatra.{NotFound, ScalatraServlet}
 import org.scalatra.metrics.MetricsBootstrap
 import org.scalatra.metrics.MetricsSupportExtensions._
 import org.scalatra.servlet.{MultipartConfig, ServletApiImplicits}
-
 import org.apache.livy._
 import org.apache.livy.server.auth.LdapAuthenticationHandlerImpl
 import org.apache.livy.server.batch.BatchSessionServlet
@@ -172,6 +172,8 @@ class LivyServer extends Logging {
           "date" -> LIVY_BUILD_DATE,
           "url" -> LIVY_REPO_URL)
       }
+
+      // options("/*") { response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"))}
     }
 
     // Servlet for hosting static files such as html, css, and js
@@ -216,6 +218,7 @@ class LivyServer extends Logging {
           try {
             val context = sce.getServletContext()
             context.initParameters(org.scalatra.EnvironmentKey) = livyConf.get(ENVIRONMENT)
+            context.setInitParameter("allowedMethods", "GET,POST,OPTIONS")
 
             val interactiveServlet = new InteractiveSessionServlet(
               interactiveSessionManager, sessionStore, livyConf, accessManager)
@@ -260,6 +263,7 @@ class LivyServer extends Logging {
           s"Kerberos auth requires ${AUTH_KERBEROS_KEYTAB.key} to be provided.")
 
         val holder = new FilterHolder(new AuthenticationFilter())
+        holder.setInitParameter("allowedMethods", "GET,POST,HEAD,OPTIONS")
         holder.setInitParameter(AuthenticationFilter.AUTH_TYPE, authType)
         holder.setInitParameter(KerberosAuthenticationHandler.PRINCIPAL, principal)
         holder.setInitParameter(KerberosAuthenticationHandler.KEYTAB, keytab)
