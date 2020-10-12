@@ -262,8 +262,12 @@ class LivyServer extends Logging {
         require(keytab != null,
           s"Kerberos auth requires ${AUTH_KERBEROS_KEYTAB.key} to be provided.")
 
+        // Kerberos token validity in seconds, before it needs renewal
+        val tokenValiditySeconds = livyConf.getInt(AUTH_KERBEROS_TOKEN_VALIDITY)
+
         val holder = new FilterHolder(new AuthenticationFilter())
         holder.setInitParameter("allowedMethods", "GET,POST,HEAD,OPTIONS")
+        holder.setInitParameter("token.validity", tokenValiditySeconds.toString)
         holder.setInitParameter(AuthenticationFilter.AUTH_TYPE, authType)
         holder.setInitParameter(KerberosAuthenticationHandler.PRINCIPAL, principal)
         holder.setInitParameter(KerberosAuthenticationHandler.KEYTAB, keytab)
